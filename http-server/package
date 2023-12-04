@@ -1,0 +1,14 @@
+{
+  "name": "registration",
+  "version": "1.0.0",
+  "description": "forms",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    
+  }
+}
