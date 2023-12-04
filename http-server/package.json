@@ -1,0 +1,14 @@
+{
+  "name": "reg",
+  "version": "1.0.0",
+  "description": "form",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server"
+  },
+  "author": "nithin",
+  "license": "MIT",
+  "dependencies": {
+    "minimist": "^1.2.5"
+  }
+}
