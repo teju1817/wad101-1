@@ -19,39 +19,51 @@ const TodoList = () => {
   };
 
   const getDueToday = () => {
-    const today = new Date();
-    const todayFormatted = formattedDate(today);
-    const dueTodayItems = allItems.filter(
-      (item) => item.dueDate === todayFormatted
-    );
-    return dueTodayItems;
+    const today = new Date().toISOString().split("T")[0];
+    return allItems.filter((item) => item.dueDate === today);
   };
 
   const getDueLater = () => {
     const today = new Date().toISOString().split("T")[0];
-    return allItems.filter(
-      (item) => !item.completed && item.dueDate > today
-    );
+    return allItems.filter((item) => !item.completed && item.dueDate > today);
   };
 
-  const formatDisplayableList = (list) => {
-    const today = new Date().toISOString().split("T")[0];
-    return list
-      .map((item) => {
-        const dateDisplay = item.dueDate === today ? "" : ` ${item.dueDate}`;
-        return `${item.completed ? "[x]" : "[ ]"} ${item.title}${dateDisplay}`;
-      })
-      .join("\n");
+  const toDisplayableList = () => {
+    const overdueList = getOverdue();
+    const dueTodayList = getDueToday();
+    const dueLaterList = getDueLater();
+
+    const overdueDisplay = overdueList.length
+      ? `\nOverdue\n${overdueList
+          .map(
+            (item) =>
+              `[ ] ${item.title} ${formattedDate(item.dueDate)}\n`
+          )
+          .join("")}`
+      : "";
+
+    const dueTodayDisplay = dueTodayList.length
+      ? `\nDue Today\n${dueTodayList
+          .map((item) => `[x] ${item.title}\n`)
+          .join("")}`
+      : "";
+
+    const dueLaterDisplay = dueLaterList.length
+      ? `\nDue Later\n${dueLaterList
+          .map(
+            (item) =>
+              `[ ] ${item.title} ${formattedDate(item.dueDate)}\n`
+          )
+          .join("")}`
+      : "";
+
+    console.log(`My Todo-list${overdueDisplay}${dueTodayDisplay}${dueLaterDisplay}`);
   };
 
   return {
-    allItems,
     addItem,
     markAsComplete,
-    getOverdue,
-    getDueToday,
-    getDueLater,
-    formatDisplayableList,
+    toDisplayableList,
   };
 };
 
