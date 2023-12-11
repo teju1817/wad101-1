@@ -1,22 +1,23 @@
-const args = require("minimist")(process.argv.slice(2));
-const database = require("./models/index");
+const TodoList = require('./path_to_TodoList');
 
-const completeTask = async (taskId) => {
+const argv = require('minimist')(process.argv.slice(2));
+
+const markAsComplete = async (id) => {
   try {
-    await database.Todo.markAsComplete(taskId);
+    TodoList.markAsComplete(id);
   } catch (error) {
     console.error(error);
   }
 };
 
 (async () => {
-  const { id } = args;
+  const { id } = argv;
   if (!id) {
-    throw new Error("Please provide an ID.");
+    throw new Error("Need to pass an id");
   }
   if (!Number.isInteger(id)) {
-    throw new Error("The ID should be an integer.");
+    throw new Error("The id needs to be an integer");
   }
-  await completeTask(id);
-  await database.Todo.showList();
+  await markAsComplete(id);
+  TodoList.toDisplayableList();
 })();
