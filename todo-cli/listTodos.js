@@ -1,13 +1,5 @@
-const database = require("./models/index");
-
-const displayTodoList = async () => {
-  try {
-    await database.Todo.showList();
-  } catch (error) {
-    console.error(error);
-  }
-};
+const TodoList = require('./path_to_TodoList');
 
 (async () => {
-  await displayTodoList();
+  TodoList.toDisplayableList();
 })();
