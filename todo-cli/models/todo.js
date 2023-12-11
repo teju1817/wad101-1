@@ -79,24 +79,18 @@ module.exports = (sequelize, DataTypes) => {
     displayableString() {
       const currentDate = new Date();
       const isCompleted = this.completed;
-      const isPastDue = currentDate > this.dueDate;
       const isDueToday = currentDate.toDateString() === this.dueDate.toDateString();
       const id = this.id;
       const title = this.title;
-      let displayableDate = '';
-      let status = '';
-      
+      let displayableDate = this.dueDate.toISOString().split('T')[0]; // Formatting due date
+
       if (isDueToday) {
-        displayableDate = '';
-      } else if (!isCompleted) {
-        displayableDate = ' ' + this.dueDate.toDateString();
+        displayableDate = ''; // Empty string if due today
       }
 
-      if (isCompleted) {
-        status = 'x';
-      }
+      const status = isCompleted ? '[x]' : '[ ]';
 
-      return id + '. [' + status + '] ' + title + displayableDate;
+      return `${id}. ${status} ${title} ${displayableDate}`;
     }
   }
 
