@@ -10,7 +10,8 @@ const TodoList = () => {
   };
 
   const formattedDate = (date) => {
-    return date.toISOString().split("T")[0];
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return date.toLocaleDateString('en-US', options);
   };
 
   const getOverdue = () => {
@@ -33,31 +34,10 @@ const TodoList = () => {
     const dueTodayList = getDueToday();
     const dueLaterList = getDueLater();
 
-    const overdueDisplay = overdueList.length
-      ? `\nOverdue\n${overdueList
-          .map(
-            (item) =>
-              `[ ] ${item.title} ${formattedDate(item.dueDate)}\n`
-          )
-          .join("")}`
-      : "";
-
-    const dueTodayDisplay = dueTodayList.length
-      ? `\nDue Today\n${dueTodayList
-          .map((item) => `[x] ${item.title}\n`)
-          .join("")}`
-      : "";
-
-    const dueLaterDisplay = dueLaterList.length
-      ? `\nDue Later\n${dueLaterList
-          .map(
-            (item) =>
-              `[ ] ${item.title} ${formattedDate(item.dueDate)}\n`
-          )
-          .join("")}`
-      : "";
-
-    console.log(`My Todo-list${overdueDisplay}${dueTodayDisplay}${dueLaterDisplay}`);
+    console.log(`My Todo-list\n`);
+    console.log(`Overdue\n${overdueList.map(item => `[ ] ${item.title} ${formattedDate(item.dueDate)}`).join('\n')}\n`);
+    console.log(`Due Today\n${dueTodayList.map(item => `[x] ${item.title}`).join('\n')}\n`);
+    console.log(`Due Later\n${dueLaterList.map(item => `[ ] ${item.title} ${formattedDate(item.dueDate)}`).join('\n')}`);
   };
 
   return {
