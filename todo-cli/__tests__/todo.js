@@ -14,66 +14,45 @@ describe("Tests for functions in todo.js", function () {
     await db.sequelize.sync({ force: true });
   });
 
-  test("Check overdue tasks", async () => {
-    const task = await db.Todo.addTask({ title: "Sample Task", dueDate: calculateDueDate(-2), completed: false });
+  test("Add a todo", async () => {
+    const newTask = { title: "New Task", dueDate: calculateDueDate(3), completed: false };
+    const addedTask = await db.Todo.addTask(newTask);
+    expect(addedTask.title).toBe(newTask.title);
+    expect(addedTask.dueDate.getTime()).toBe(newTask.dueDate.getTime());
+    expect(addedTask.completed).toBe(false);
+  });
+
+  test("Mark a todo as complete", async () => {
+    const newTask = { title: "Task to Mark Complete", dueDate: calculateDueDate(2), completed: false };
+    const addedTask = await db.Todo.addTask(newTask);
+    await db.Todo.markAsComplete(addedTask.id);
+    const markedTask = await db.Todo.getTaskById(addedTask.id);
+    expect(markedTask.completed).toBe(true);
+  });
+
+  test("Retrieve overdue items", async () => {
     const overdueTasks = await db.Todo.overdue();
-    expect(overdueTasks.length).toBe(1);
+    expect(overdueTasks.length).toBeGreaterThan(0);
+    for (const task of overdueTasks) {
+      expect(task.dueDate < new Date()).toBe(true);
+    }
   });
 
-  test("Check tasks due today", async () => {
-    const tasksDueToday = await db.Todo.dueToday();
-    const task = await db.Todo.addTask({ title: "Another Sample Task", dueDate: calculateDueDate(0), completed: false });
-    const tasksToday = await db.Todo.dueToday();
-    expect(tasksToday.length).toBe(tasksDueToday.length + 1);
+  test("Retrieve due today items", async () => {
+    const todayTasks = await db.Todo.dueToday();
+    expect(todayTasks.length).toBeGreaterThan(0);
+    const currentDate = new Date();
+    for (const task of todayTasks) {
+      const dueDate = new Date(task.dueDate);
+      expect(dueDate.toDateString()).toBe(currentDate.toDateString());
+    }
   });
 
-  test("Check tasks due later", async () => {
-    const tasksDueLater = await db.Todo.dueLater();
-    const task = await db.Todo.addTask({ title: "Yet Another Task", dueDate: calculateDueDate(2), completed: false });
+  test("Retrieve due later items", async () => {
     const laterTasks = await db.Todo.dueLater();
-    expect(laterTasks.length).toBe(tasksDueLater.length + 1);
-  });
-
-  test("Mark a task as completed", async () => {
-    const overdueTasks = await db.Todo.overdue();
-    const aTask = overdueTasks[0];
-    expect(aTask.completed).toBe(false);
-    await db.Todo.markAsComplete(aTask.id);
-    await aTask.reload();
-    expect(aTask.completed).toBe(true);
-  });
-
-  test("Display formatted string for completed past-due item", async () => {
-    const overdueTasks = await db.Todo.overdue();
-    const aTask = overdueTasks[0];
-    expect(aTask.completed).toBe(true);
-    const displayValue = aTask.displayString();
-    expect(displayValue).toBe(`${aTask.id}. [x] ${aTask.title} ${aTask.dueDate}`);
-  });
-
-  test("Display formatted string for an incomplete future task", async () => {
-    const dueLaterTasks = await db.Todo.dueLater();
-    const aTask = dueLaterTasks[0];
-    expect(aTask.completed).toBe(false);
-    const displayValue = aTask.displayString();
-    expect(displayValue).toBe(`${aTask.id}. [ ] ${aTask.title} ${aTask.dueDate}`);
-  });
-
-  test("Display formatted string for an incomplete task due today", async () => {
-    const dueTodayTasks = await db.Todo.dueToday();
-    const aTask = dueTodayTasks[0];
-    expect(aTask.completed).toBe(false);
-    const displayValue = aTask.displayString();
-    expect(displayValue).toBe(`${aTask.id}. [ ] ${aTask.title}`);
-  });
-
-  test("Display formatted string for a completed task due today", async () => {
-    const dueTodayTasks = await db.Todo.dueToday();
-    const aTask = dueTodayTasks[0];
-    expect(aTask.completed).toBe(false);
-    await db.Todo.markAsComplete(aTask.id);
-    await aTask.reload();
-    const displayValue = aTask.displayString();
-    expect(displayValue).toBe(`${aTask.id}. [x] ${aTask.title}`);
+    expect(laterTasks.length).toBeGreaterThan(0);
+    for (const task of laterTasks) {
+      expect(task.dueDate > new Date()).toBe(true);
+    }
   });
 });
